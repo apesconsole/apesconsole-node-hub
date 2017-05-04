@@ -55,12 +55,14 @@ router.get("/toggle", function(req,res){
 
 router.get("/refresh", function(req,res){
 	// subscribe to a topic
-	subscriber.subscribe('T_APESCONSOLE_RD', function() {
-		// when a message arrives, do something with it
-		subscriber.on('message', function(topic, message, packet) {
-			logger.log("Received '" + message + "' on '" + topic + "'");
+	subscriber.on('connect', function() { // When connected
+		subscriber.subscribe('T_APESCONSOLE_RD', function() {
+			// when a message arrives, do something with it
+			subscriber.on('message', function(topic, message, packet) {
+				logger.log("Received '" + message + "' on '" + topic + "'");
+			});
 		});
-	});	
+	});
 	res.redirect('/index');
 });
 
