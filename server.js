@@ -19,16 +19,21 @@ app.use("/", router);
 var mqtt_url = url.parse(process.env.CLOUDMQTT_URL || 'mqtt://localhost:1883');
 
 // Create a client connection
-var client = mqtt.connect(mqtt_url , {
-  username: process.env.CLOUDMQTT_UID || '',
-  password: process.env.CLOUDMQTT_PWD || ''
+var publisher = mqtt.connect(mqtt_url , {
+  username: process.env.CLOUDMQTT_PUB_UID || '',
+  password: process.env.CLOUDMQTT_PUB_PWD || ''
+});
+
+var subscriber = mqtt.connect(mqtt_url , {
+  username: process.env.CLOUDMQTT_SUB_UID || '',
+  password: process.env.CLOUDMQTT_SUB_PWD || ''
 });
 
 router.get("/fetch", function(req,res){
 	logger.log("Message - fetch");
-	client.on('connect', function() { // When connected
+	publisher.on('connect', function() { // When connected
 	// publish a message to a topic
-	  client.publish('T_APESCONSOLE_TRG', '{roomId: 1,  deviceId: 1, action: "fetch"}', function() {
+	  publisher.publish('T_APESCONSOLE_TRG', '{roomId: 1,  deviceId: 1, action: "fetch"}', function() {
 		logger.log("Message is sent");
 		client.end(); // Close the connection when published
 	  });
@@ -38,9 +43,9 @@ router.get("/fetch", function(req,res){
 
 router.get("/toggle", function(req,res){
 	logger.log("Message - toggle");
-	client.on('connect', function() { // When connected
+	publisher.on('connect', function() { // When connected
 	// publish a message to a topic
-	  client.publish('T_APESCONSOLE_TRG', '{roomId: 1,  deviceId: 1, action: "toggle"}', function() {
+	  publisher.publish('T_APESCONSOLE_TRG', '{roomId: 1,  deviceId: 1, action: "toggle"}', function() {
 		logger.log("Message is sent");
 		client.end(); // Close the connection when published
 	  });
@@ -50,9 +55,9 @@ router.get("/toggle", function(req,res){
 
 router.get("/refresh", function(req,res){
 	// subscribe to a topic
-	client.subscribe('T_APESCONSOLE_RD', function() {
+	subscriber.subscribe('T_APESCONSOLE_RD', function() {
 		// when a message arrives, do something with it
-		client.on('message', function(topic, message, packet) {
+		subscriber.on('message', function(topic, message, packet) {
 			logger.log("Received '" + message + "' on '" + topic + "'");
 		});
 	});	
