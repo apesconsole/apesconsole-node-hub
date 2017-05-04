@@ -81,7 +81,7 @@ router.get("/appaccess", function(req,res){
 	var content = {};
 	var headers = req.headers;
 	var userAgent = headers['user-agent'];	
-	logger.setLog('User Agent - ' + userAgent + ', Request - ' + req.method );
+	logger.log('User Agent - ' + userAgent + ', Request - ' + req.method );
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");	
 	var url_parts = url.parse(req.url, true);
