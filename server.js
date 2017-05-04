@@ -53,9 +53,10 @@ var bridge = {
 
 var globalRoomData = [
 	{ title: 'Hall', id: 1, icon: 'hall', deviceList: [
-		{ title: 'Light', id: 'hall-light1' , status: false},
+		{ title: 'Lamp', id: 'hall-light1' , status: false},
 		{ title: 'AC', id: 'random-1' , status: false},
-		{ title: 'Music', id: 'random-2' , status: false}
+		{ title: 'Music', id: 'random-2' , status: false},
+		{ title: 'Garden', id: 'sensor-status' , status: false}
 	]},
 	{ title: 'Master Room', id: 2, icon: 'master', deviceList: [
 		{ title: 'Light', id: 'mstrm-light1' , status: false},
@@ -105,7 +106,7 @@ var searchbridge = function(req,res){
 var validate = function(req,res){
     var data = {status: false};
 	var url_parts = url.parse(req.url, true);
-	var query = url_parts.query;		
+	var query = url_parts.query;	
 	if(query.id == bridge.bridgeid && query.key == bridge.key){
 		data.status = true;
 	}
