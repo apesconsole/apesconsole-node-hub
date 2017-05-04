@@ -14,7 +14,7 @@ var path = __dirname + '/public/';
 app.use('/resources', express.static(path + 'resources'));
 app.use("/", router);
 
-var mqtt_url = url.parse(process.env.CLOUDMQTT_URL || 'mqtt://localhost:1883');
+var mqtt_url = url.parse(process.env.CLOUDMQTT_URL || 'tcp://localhost:0000');
 // Create a client connection
 var publisher = mqtt.connect(mqtt_url , {
   username: process.env.CLOUDMQTT_PUB_UID || '',
@@ -136,15 +136,7 @@ var click = function(req,res){
 	// publish a message to a topic
 	publisher.publish('T_APESCONSOLE_TRG', '{action: "click",  deviceId: ' + query.deviceId + ', roomId:' + query.roomId + '}');		
 	return data;
-});
-
-var fetch = function(req,res){
-	var data = {};
-	var url_parts = url.parse(req.url, true);
-	var query = url_parts.query;	
-	
-	return data;
-});
+}
 
 router.get("/shut", function(req,res){
 	logger.log("Shutting Down");
