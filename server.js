@@ -106,7 +106,7 @@ var validate = function(req,res){
     var data = {status: false};
 	var url_parts = url.parse(req.url, true);
 	var query = url_parts.query;		
-	if(query.id = bridge.bridgeid && query.key == bridge.key){
+	if(query.id == bridge.bridgeid && query.key == bridge.key){
 		data.status = true;
 	}
 	return data;
@@ -121,7 +121,7 @@ var devicelist = function(req,res){
 	var url_parts = url.parse(req.url, true);
 	var query = url_parts.query;		
 	for(var i=0; i<globalRoomData.length; i++){
-		if(globalRoomData[i].id = query.roomId){
+		if(globalRoomData[i].id == query.roomId){
 			data = globalRoomData[i].deviceList;
 			break;
 		}
