@@ -29,40 +29,34 @@ var subscriber = mqtt.connect(mqtt_url , {
   password: process.env.CLOUDMQTT_SUB_PWD || ''
 });
 
+subscriber.on('connect', function() { // When connected
+	subscriber.subscribe('T_APESCONSOLE_RD');
+	subscriber.on('message', function(topic, message, packet) {
+		logger.log("Received '" + message + "' on '" + topic + "'");
+	});	
+});
+
 router.get("/fetch", function(req,res){
 	logger.log("Message - fetch");
-	publisher.on('connect', function() { // When connected
 	// publish a message to a topic
-	  publisher.publish('T_APESCONSOLE_TRG', '{roomId: 1,  deviceId: 1, action: "fetch"}', function() {
+	publisher.publish('T_APESCONSOLE_TRG', '{roomId: 1,  deviceId: 1, action: "fetch"}', function() {
 		logger.log("Message is sent");
-		client.end(); // Close the connection when published
-	  });
-	});	
+	});
 	res.redirect('/index');
 });
 
 router.get("/toggle", function(req,res){
 	logger.log("Message - toggle");
-	publisher.on('connect', function() { // When connected
-	// publish a message to a topic
-	  publisher.publish('T_APESCONSOLE_TRG', '{roomId: 1,  deviceId: 1, action: "toggle"}', function() {
+	publisher.publish('T_APESCONSOLE_TRG', '{roomId: 1,  deviceId: 1, action: "toggle"}', function() {
 		logger.log("Message is sent");
-		client.end(); // Close the connection when published
-	  });
 	});	
 	res.redirect('/index');
 });
 
-router.get("/refresh", function(req,res){
-	// subscribe to a topic
-	subscriber.on('connect', function() { // When connected
-		subscriber.subscribe('T_APESCONSOLE_RD', function() {
-			// when a message arrives, do something with it
-			subscriber.on('message', function(topic, message, packet) {
-				logger.log("Received '" + message + "' on '" + topic + "'");
-			});
-		});
-	});
+router.get("/shut", function(req,res){
+	logger.log("Shutting Down");
+	publisher.end();
+	subscriber.end();	
 	res.redirect('/index');
 });
 
