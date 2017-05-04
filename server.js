@@ -45,7 +45,7 @@ subscriber.on('connect', function() { // When connected
 });
 
 var bridge = {
-	status		: false, 
+	status		: true, 
 	bridgeid	: process.env.CLOUD_BRIDGE_ID || 'ABCD_ID', 
 	bridgename	: process.env.CLOUD_BRIDGE_NAME || 'ABCD_NAME', 
 	key			: process.env.CLOUD_BRIDGE_KEY || 'ABCD_KEY'
