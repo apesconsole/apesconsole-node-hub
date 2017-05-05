@@ -55,8 +55,7 @@ var globalRoomData = [
 	{ title: 'Hall', id: 1, icon: 'hall', deviceList: [
 		{ title: 'Lamp', id: 'hall-light1' , status: false},
 		{ title: 'AC', id: 'random-1' , status: false},
-		{ title: 'Music', id: 'random-2' , status: false},
-		{ title: 'Garden', id: 'sensor-status' , status: false}
+		{ title: 'Music', id: 'random-2' , status: false}
 	]},
 	{ title: 'Master Room', id: 2, icon: 'master', deviceList: [
 		{ title: 'Light', id: 'mstrm-light1' , status: false},
@@ -65,6 +64,10 @@ var globalRoomData = [
 	]},
 	{ title: 'Guest Room', id: 3, icon: 'guest', deviceList: [
 		{ title: 'Light', id: 'gstrm-light1' , status: false}						
+	]},
+	{ title: 'Garden', id: 1, icon: 'garden', deviceList: [
+		{ title: 'Soil', id: 'sensor-status' , status: false},
+		{ title: 'Sprinkler', id: 'water-pump' , status: false}
 	]}
 ];
 
