@@ -65,7 +65,7 @@ var globalRoomData = [
 	{ title: 'Guest Room', id: 3, icon: 'guest', deviceList: [
 		{ title: 'Light', id: 'gstrm-light1' , status: false}						
 	]},
-	{ title: 'Garden', id: 1, icon: 'garden', deviceList: [
+	{ title: 'Garden', id: 4, icon: 'garden', deviceList: [
 		{ title: 'Soil', id: 'sensor-status' , status: false},
 		{ title: 'Sprinkler', id: 'water-pump' , status: false}
 	]}
