@@ -138,7 +138,7 @@ var click = function(req,res){
 	var url_parts = url.parse(req.url, true);
 	var query = url_parts.query;	
 	// publish a message to a topic
-	publisher.publish('T_APESCONSOLE_TRG', '{status: ' + query.requestState + ',  deviceId: "' + query.deviceId + '", roomId:' + query.roomId + '}');		
+	publisher.publish('T_APESCONSOLE_TRG', '{"status": "' + query.requestState + ',  "deviceId": "' + query.deviceId + '", "roomId":' + query.roomId + '}');		
 	return data;
 }
 
