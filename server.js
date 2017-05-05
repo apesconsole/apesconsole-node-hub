@@ -29,7 +29,7 @@ var subscriber = mqtt.connect(mqtt_url , {
 subscriber.on('connect', function() { // When connected
 	subscriber.subscribe('T_APESCONSOLE_RD');
 	subscriber.on('message', function(topic, message, packet) {
-		var deviceState = JSON.parse(message);
+		var deviceState = JSON.parse(message.toString());
 		logger.log("Received '" + message + "' on '" + topic + "'");
 		for(var i=0; i<globalRoomData.length; i++){
 			if(globalRoomData[i].id == deviceState.roomId){
