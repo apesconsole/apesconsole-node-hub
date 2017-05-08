@@ -64,7 +64,7 @@ var loadDeviceInfo = function( _roomId, callBackMethods){
 
 subscriber.on('connect', function() { 
     // When connected
-	logger.info('MQTT HUB - Ready');
+	logger.log('MQTT HUB - Ready');
 	subscriber.subscribe('T_APESCONSOLE_RD');
 	subscriber.on('message', function(topic, message, packet) {
 		logger.log("Received feed back from Raspberry Pi ->'" + message.toString());
