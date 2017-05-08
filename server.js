@@ -76,20 +76,22 @@ var cloudMonGoDBConfig = {
     mongoUri: process.env.MONGODB_URI || ''
 }
 
-var loadsensordata = function(criteria, callBackMethods){
+var loadsensordata = function(){
 	logger.console('Before Results');
 	MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
 		db.collection('ZONE_STORE').find( {} ).toArray(function(err, result) {
 			db.close();
 			if (err) 
-				callBackMethods.failure();
+				logger.log(err);
 			else {
 				globalRoomData = result;
-				logger.console('After Results - ' + globalRoomData.length);
+				logger.log('After Results - ' + globalRoomData.length);
 			}
 		});
 	});
 }
+
+loadsensordata();
 
 router.use(function (req, res, next) {
 	var headers = req.headers;
