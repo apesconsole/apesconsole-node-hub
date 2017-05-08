@@ -18,31 +18,13 @@ app.use("/", router);
 var mqtt_url = url.parse(process.env.CLOUDMQTT_URL || 'tcp://localhost:0000');
 // Create a client connection
 var publisher = mqtt.connect(mqtt_url , {
-  username: process.env.CLOUDMQTT_PUB_UID || '',
-  password: process.env.CLOUDMQTT_PUB_PWD || ''
+	username: process.env.CLOUDMQTT_PUB_UID || '',
+	password: process.env.CLOUDMQTT_PUB_PWD || ''
 });
 
 var subscriber = mqtt.connect(mqtt_url , {
-  username: process.env.CLOUDMQTT_SUB_UID || '',
-  password: process.env.CLOUDMQTT_SUB_PWD || ''
-});
-
-subscriber.on('connect', function() { // When connected
-	subscriber.subscribe('T_APESCONSOLE_RD');
-	subscriber.on('message', function(topic, message, packet) {
-		var deviceState = JSON.parse(message.toString());
-		logger.log("Received '" + message + "' on '" + topic + "'");
-		for(var i=0; i<globalRoomData.length; i++){
-			if(globalRoomData[i].id == deviceState.roomId){
-				for(var j=0;j<globalRoomData[i].deviceList.length;j++){
-					if(globalRoomData[i].deviceList[j].id == deviceState.deviceId){
-						globalRoomData[i].deviceList[j].status = deviceState.status;
-						i = globalRoomData.length; break;
-					}
-				}
-			}
-		}
-	});	
+	username: process.env.CLOUDMQTT_SUB_UID || '',
+	password: process.env.CLOUDMQTT_SUB_PWD || ''
 });
 
 var bridge = {
@@ -52,46 +34,43 @@ var bridge = {
 	key			: process.env.CLOUD_BRIDGE_KEY || 'ABCD_KEY'
 };
 
-var globalRoomData = null; /*[
-	{ title: 'Hall', id: 1, icon: 'hall', deviceList: [
-		{ title: 'Lamp', id: 'hall-light1' , status: false},
-		{ title: 'AC', id: 'random-1' , status: false},
-		{ title: 'Music', id: 'random-2' , status: false}
-	]},
-	{ title: 'Master Room', id: 2, icon: 'master', deviceList: [
-		{ title: 'Light', id: 'mstrm-light1' , status: false},
-		{ title: 'Music', id: 'random-3' , status: false},
-		{ title: 'Heater', id: 'random-4' , status: false}						
-	]},
-	{ title: 'Guest Room', id: 3, icon: 'guest', deviceList: [
-		{ title: 'Light', id: 'gstrm-light1' , status: false}						
-	]},
-	{ title: 'Garden', id: 4, icon: 'garden', deviceList: [
-		{ title: 'Soil', id: 'sensor-status' , status: false},
-		{ title: 'Sprinkler', id: 'water-pump' , status: false}
-	]}
-];*/
-
 var cloudMonGoDBConfig = {
     mongoUri: process.env.MONGODB_URI || ''
 }
 
-var loadsensordata = function(){
-	logger.log('Before Results');
+var loadZoneInfo = function(callBackMethods){
 	MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
 		db.collection('ZONE_STORE').find( {} ).toArray(function(err, result) {
 			db.close();
 			if (err) 
-				logger.log(err);
-			else {
-				globalRoomData = result;
-				logger.log('After Results - ' + globalRoomData.length);
-			}
+				callBackMethods.failure();
+			else
+				callBackMethods.success(result);
 		});
 	});
 }
 
-loadsensordata();
+var loadDeviceInfo = function( _roomId, callBackMethods){
+	MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
+		db.collection('ZONE_STORE').find( {roomId: _roomId} ).toArray(function(err, result) {
+			db.close();
+			if (err) 
+				callBackMethods.failure();
+			else
+				callBackMethods.success(result);
+		});
+	});
+}
+
+subscriber.on('connect', function() { 
+    // When connected
+	logger.info('MQTT HUB - Ready');
+	subscriber.subscribe('T_APESCONSOLE_RD');
+	subscriber.on('message', function(topic, message, packet) {
+		logger.log("Received feed back from Raspberry Pi ->'" + message.toString());
+		var deviceState = JSON.parse(message.toString());
+	});	
+});
 
 router.use(function (req, res, next) {
 	var headers = req.headers;
@@ -138,20 +117,28 @@ var validate = function(req,res){
 }
 
 var roomlist = function(req,res){
-	return globalRoomData;
+	loadZoneInfo({ 
+		success: function(rows){
+			return rows;
+		}, 
+		failure: function(){
+			return data;
+		}
+	});
 }
 
 var devicelist = function(req,res){
     var data = {status: false};
 	var url_parts = url.parse(req.url, true);
-	var query = url_parts.query;		
-	for(var i=0; i<globalRoomData.length; i++){
-		if(globalRoomData[i].id == query.roomId){
-			data = globalRoomData[i].deviceList;
-			break;
+	var query = url_parts.query;
+	loadDeviceInfo(query.roomId, { 
+		success: function(rows){
+			return rows;
+		}, 
+		failure: function(){
+			return data;
 		}
-	}
-	return data;
+	});
 }
 
 var click = function(req,res){
@@ -159,7 +146,12 @@ var click = function(req,res){
 	var url_parts = url.parse(req.url, true);
 	var query = url_parts.query;	
 	// publish a message to a topic
-	publisher.publish('T_APESCONSOLE_TRG', '{"status": "' + query.requestState + '",  "deviceId": "' + query.deviceId + '", "roomId":' + query.roomId + '}');		
+	publisher.publish(
+	    //Topic
+		'T_APESCONSOLE_TRG', 
+		//Message
+		'{"status": "' + query.requestState + '",  "deviceId": "' + query.deviceId + '", "roomId":' + query.roomId + '}'
+	);		
 	return data;
 }
 
