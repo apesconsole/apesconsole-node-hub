@@ -9,6 +9,7 @@ var router = express.Router();
 var logger = require("logging_component");
 var url = require("url");
 var mqtt = require('mqtt');
+var MongoClient  = require('mongodb').MongoClient;
 
 var path = __dirname + '/public/';
 app.use('/resources', express.static(path + 'resources'));
@@ -51,7 +52,7 @@ var bridge = {
 	key			: process.env.CLOUD_BRIDGE_KEY || 'ABCD_KEY'
 };
 
-var globalRoomData = [
+var globalRoomData = null; /*[
 	{ title: 'Hall', id: 1, icon: 'hall', deviceList: [
 		{ title: 'Lamp', id: 'hall-light1' , status: false},
 		{ title: 'AC', id: 'random-1' , status: false},
@@ -69,8 +70,26 @@ var globalRoomData = [
 		{ title: 'Soil', id: 'sensor-status' , status: false},
 		{ title: 'Sprinkler', id: 'water-pump' , status: false}
 	]}
-];
+];*/
 
+var cloudMonGoDBConfig = {
+    mongoUri: process.env.MONGODB_URI || ''
+}
+
+var loadsensordata = function(criteria, callBackMethods){
+	logger.console('Before Results');
+	MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
+		db.collection('ZONE_STORE').find( {} ).toArray(function(err, result) {
+			db.close();
+			if (err) 
+				callBackMethods.failure();
+			else {
+				globalRoomData = result;
+				logger.console('After Results - ' + globalRoomData.length);
+			}
+		});
+	});
+}
 
 router.use(function (req, res, next) {
 	var headers = req.headers;
