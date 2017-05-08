@@ -77,7 +77,7 @@ var cloudMonGoDBConfig = {
 }
 
 var loadsensordata = function(){
-	logger.console('Before Results');
+	logger.log('Before Results');
 	MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
 		db.collection('ZONE_STORE').find( {} ).toArray(function(err, result) {
 			db.close();
