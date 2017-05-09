@@ -70,9 +70,8 @@ var updateDeviceInfo = function( _device ){
 					status: _device.status
 				};
 				
-				if(device.type == 'G'){
+				if(device.type == 'S'){
 					//Sensor Data
-					data.message  = _device.status ? 'Optimal' : 'Critical';
 					data.color = _device.status ? 'green' : 'red';
 					data.value  = _device.value;
 				}
