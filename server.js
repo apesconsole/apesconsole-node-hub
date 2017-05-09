@@ -71,8 +71,11 @@ var updateDeviceInfo = function( _device ){
 				};
 				
 				if(device.type == 'R'){
-					data.text  = _device.status ? 'Healthy' : 'Dry';
+					//Moisture Sensor Data
+					data.moisture  = _device.status ? 'Optimal' : 'Critical';
 					data.color = _device.status ? 'green' : 'red';
+					//Temperature Sensor Data
+					data.temperature  = _device.temperature;
 				}
 				
 				MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
