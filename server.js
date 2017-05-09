@@ -52,7 +52,8 @@ var loadZoneInfo = function(callBackMethods){
 
 var loadDeviceInfo = function( _roomId, callBackMethods){
 	MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
-		db.collection('ZONE_STORE').find( {roomId: _roomId} ).toArray(function(err, result) {
+		db.collection('ZONE_STORE').find( {"roomId": _roomId} ).toArray(function(err, result) {
+		    logger.log(result.length);
 			db.close();
 			if (err) 
 				callBackMethods.failure();
@@ -102,10 +103,11 @@ router.get("/appaccess", function(req,res){
 						       break;	
 							   
 		//Cloud Mongo Asynch Calls Follow
-		case 'roomlist'      : roomlist(req, res, function(data){
+		case 'roomlist'      : roomlist(function(data){
 							      res.json(data);
 						      }); break;
-		case 'devicelist'    : devicelist(req, res, function(data){
+		case 'devicelist'    : var _roomId = query.roomId;
+							   devicelist(_roomId, function(data){
 							      res.json(data);
 						      }); break;
 		/*case 'fetch'         : fetch(req, res, function(data){
@@ -129,7 +131,7 @@ var validate = function(req,res){
 	return data;
 }
 
-var roomlist = function(req,res, callBak){
+var roomlist = function(callBak){
 	loadZoneInfo({ 
 		success: function(rows){
 			callBak(rows);
@@ -140,11 +142,8 @@ var roomlist = function(req,res, callBak){
 	});
 }
 
-var devicelist = function(req,res, callBak){
-    var data = {status: false};
-	var url_parts = url.parse(req.url, true);
-	var query = url_parts.query;
-	loadDeviceInfo(query.roomId, { 
+var devicelist = function(_roomId, callBak){
+	loadDeviceInfo(_roomId, { 
 		success: function(rows){
 			callBak(rows);
 		}, 
