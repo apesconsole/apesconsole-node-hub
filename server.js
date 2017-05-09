@@ -108,9 +108,9 @@ router.get("/appaccess", function(req,res){
 		case 'devicelist'    : devicelist(req, res, function(data){
 							      res.json(data);
 						      }); break;
-		case 'fetch'         : fetch(req, res, function(data){
+		/*case 'fetch'         : fetch(req, res, function(data){
 							      res.json(data);
-						      }); break;
+						      }); break;*/
 	}
 });
 
