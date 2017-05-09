@@ -68,7 +68,7 @@ subscriber.on('connect', function() {
 	subscriber.subscribe('T_APESCONSOLE_RD');
 	subscriber.on('message', function(topic, message, packet) {
 		logger.log("Received feed back from Raspberry Pi ->'" + message.toString());
-		var deviceState = JSON.parse(message.toString());
+		//var deviceState = JSON.parse(message.toString());
 	});	
 });
 
@@ -91,14 +91,27 @@ router.get("/appaccess", function(req,res){
 	var url_parts = url.parse(req.url, true);
 	var query = url_parts.query;
 	switch(query.action){
-		case 'searchbridge': content = searchbridge(req, res); break;
-		case 'validate': content = validate(req, res); break;
-		case 'roomlist': content = roomlist(req, res); break;
-		case 'devicelist': content = devicelist(req, res); break;
-		case 'click': content = click(req, res); break;
-		case 'fetch': content = fetch(req, res); 
+		case 'searchbridge'  : content = searchbridge(req, res); 
+		                       res.json(content);
+							   break;
+		case 'validate'      : content = validate(req, res); 
+						       res.json(content);
+						       break;
+		case 'click'         : content = click(req, res, function(data){
+							   res.json(content);
+						       break;	
+							   
+		//Cloud Mongo Asynch Calls Follow
+		case 'roomlist'      : roomlist(req, res, function(data){
+							      res.json(data);
+						      }); break;
+		case 'devicelist'    : devicelist(req, res, function(data){
+							      res.json(data);
+						      }); break;
+		case 'fetch'         : fetch(req, res, function(data){
+							      res.json(data);
+						      }); break;
 	}
-	res.json(content);
 });
 
 
@@ -116,27 +129,27 @@ var validate = function(req,res){
 	return data;
 }
 
-var roomlist = function(req,res){
+var roomlist = function(req,res, callBak){
 	loadZoneInfo({ 
 		success: function(rows){
-			return rows;
+			callBak(rows);
 		}, 
 		failure: function(){
-			return data;
+			callBak({});
 		}
 	});
 }
 
-var devicelist = function(req,res){
+var devicelist = function(req,res, callBak){
     var data = {status: false};
 	var url_parts = url.parse(req.url, true);
 	var query = url_parts.query;
 	loadDeviceInfo(query.roomId, { 
 		success: function(rows){
-			return rows;
+			callBak(rows);
 		}, 
 		failure: function(){
-			return data;
+			callBak({});
 		}
 	});
 }
