@@ -97,7 +97,7 @@ router.get("/appaccess", function(req,res){
 		case 'validate'      : content = validate(req, res); 
 						       res.json(content);
 						       break;
-		case 'click'         : content = click(req, res, function(data){
+		case 'click'         : content = click(req, res);
 							   res.json(content);
 						       break;	
 							   
