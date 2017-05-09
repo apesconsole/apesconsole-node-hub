@@ -52,7 +52,7 @@ var loadZoneInfo = function(callBackMethods){
 
 var loadDeviceInfo = function( _roomId, callBackMethods){
 	MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
-		db.collection('ZONE_STORE').find( {"roomId": _roomId} ).toArray(function(err, result) {
+		db.collection('ZONE_STORE').find( {"roomId": eval(_roomId)} ).toArray(function(err, result) {
 		    logger.log(result.length);
 			db.close();
 			if (err) 
