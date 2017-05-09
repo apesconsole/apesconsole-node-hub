@@ -50,9 +50,9 @@ var loadZoneInfo = function(callBackMethods){
 	});
 }
 
-var loadDeviceInfo = function( _roomId, callBackMethods){
+var loadDeviceInfo = function( criteria, callBackMethods){
 	MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
-		db.collection('DEVICE_STORE').find( {roomId: eval(_roomId)}).toArray(function(err, result) {
+		db.collection('DEVICE_STORE').find( ).toArray(function(err, result) {
 			db.close();
 			if (err) 
 				callBackMethods.failure();
@@ -62,13 +62,43 @@ var loadDeviceInfo = function( _roomId, callBackMethods){
 	});
 }
 
+var updateDeviceInfo = function( _device ){
+	loadDeviceInfo({deviceId: eval(_device.deviceId)}, { 
+		success: function(device){
+			if(device.length > 0) {
+				var data = {
+					status: _device.status
+				};
+				
+				if(device.type == 'R'){
+					data.text  = _device.status ? 'Healthy' : 'Dry';
+					data.color = _device.status ? 'green' : 'red';
+				}
+				
+				MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
+					db.collection('DEVICE_STORE').update( {deviceId: device.deviceId}, {$set: data}, function(err, opt) {
+						db.close();
+					});
+				});
+			} else {
+				logger.log('Device Not Found - Device Id:' + _device.deviceId);
+			}
+		}, 
+		failure: function(){
+			logger.log('Device Update Failed - Device Id:' + _device.deviceId);
+		}
+	});
+}
+
 subscriber.on('connect', function() { 
     // When connected
 	logger.log('MQTT HUB - Ready');
 	subscriber.subscribe('T_APESCONSOLE_RD');
 	subscriber.on('message', function(topic, message, packet) {
 		logger.log("Received feed back from Raspberry Pi ->'" + message.toString());
-		//var deviceState = JSON.parse(message.toString());
+		var deviceState = JSON.parse(message.toString());
+		//Asynch Update. I don't care of the call back
+		updateDeviceInfo(deviceState);
 	});	
 });
 
@@ -142,9 +172,8 @@ var roomlist = function(callBak){
 }
 
 var devicelist = function(_roomId, callBak){
-	loadDeviceInfo(_roomId, { 
+	loadDeviceInfo({roomId: eval(_roomId)}, { 
 		success: function(devices){
-			//var devices = rows.length > 0 ? rows[0].deviceList : [];
 			callBak(devices);
 		}, 
 		failure: function(){
