@@ -144,7 +144,8 @@ var roomlist = function(callBak){
 var devicelist = function(_roomId, callBak){
 	loadDeviceInfo(_roomId, { 
 		success: function(rows){
-			callBak(rows.deviceList);
+			var devices = rows.length > 0 ? rows[0].deviceList : [];
+			callBak(devices);
 		}, 
 		failure: function(){
 			callBak({});
