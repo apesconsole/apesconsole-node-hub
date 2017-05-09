@@ -52,7 +52,7 @@ var loadZoneInfo = function(callBackMethods){
 
 var loadDeviceInfo = function( _roomId, callBackMethods){
 	MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
-		db.collection('ZONE_STORE').find( {roomId: eval(_roomId)}, {deviceList : 1} ).toArray(function(err, result) {
+		db.collection('DEVICE_STORE').find( {roomId: eval(_roomId)}).toArray(function(err, result) {
 			db.close();
 			if (err) 
 				callBackMethods.failure();
@@ -132,8 +132,8 @@ var validate = function(req,res){
 
 var roomlist = function(callBak){
 	loadZoneInfo({ 
-		success: function(rows){
-			callBak(rows);
+		success: function(rooms){
+			callBak(rooms);
 		}, 
 		failure: function(){
 			callBak({});
@@ -143,8 +143,8 @@ var roomlist = function(callBak){
 
 var devicelist = function(_roomId, callBak){
 	loadDeviceInfo(_roomId, { 
-		success: function(rows){
-			var devices = rows.length > 0 ? rows[0].deviceList : [];
+		success: function(devices){
+			//var devices = rows.length > 0 ? rows[0].deviceList : [];
 			callBak(devices);
 		}, 
 		failure: function(){
