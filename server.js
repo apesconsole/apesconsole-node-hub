@@ -188,6 +188,7 @@ var click = function(req,res){
 	var url_parts = url.parse(req.url, true);
 	var query = url_parts.query;	
 	// publish a message to a topic
+	if('undefined' == query.requestState || undefined == query.requestState) return {status: false};
 	publisher.publish(
 	    //Topic
 		'T_APESCONSOLE_TRG', 
