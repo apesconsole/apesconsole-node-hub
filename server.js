@@ -77,7 +77,7 @@ var updateDeviceInfo = function( _device ){
 				}
 				
 				MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
-					db.collection('DEVICE_STORE').update( {_id: device._id}, {$set: data}, function(err, opt) {
+					db.collection('DEVICE_STORE').update( {deviceId: _device.deviceId}, {$set: data}, function(err, opt) {
 						db.close();
 					});
 				});
