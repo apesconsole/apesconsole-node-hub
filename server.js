@@ -63,7 +63,7 @@ var loadDeviceInfo = function( criteria, callBackMethods){
 }
 
 var updateDeviceInfo = function( _device ){
-	loadDeviceInfo({deviceId: eval(_device.deviceId)}, { 
+	loadDeviceInfo({deviceId: _device.deviceId}, { 
 		success: function(device){
 			if(device.length > 0) {
 				var data = {
