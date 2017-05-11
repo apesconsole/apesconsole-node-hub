@@ -78,8 +78,10 @@ var resetAllDevices =  function(){
 }
 
 var updateDeviceInfo = function( _device ){
+    logger.log(_device.deviceId);
 	loadDeviceInfo({deviceId: _device.deviceId}, { 
 		success: function(device){
+			logger.log(device.length);
 			if(device.length == 1) {
 				var data = {
 					status: _device.status == 1 ? true : (_device.status == 0 ) ? false : ( _device.status ) 
@@ -215,7 +217,7 @@ var click = function(req,res){
 	// publish a message to a topic
 	if('undefined' == query.requestState || undefined == query.requestState) return {status: false};
 	var message = '{"status": "' + query.requestState + '",  "deviceId": "' + query.deviceId + '", "roomId":' + query.roomId + '}'
-	logger.log('Pub Message->' + JSON.stringify(message));
+	logger.log('Pub Message->' + message);
 	publisher.publish(
 	    //Topic
 		'T_APESCONSOLE_TRG', 
