@@ -72,7 +72,7 @@ var resetAllDevices =  function(){
 	    //Update all Devices
 		db.collection('DEVICE_STORE').update({$set: {state: false}}, {w: 1, multi: true}, function(err, opt) {
 			db.close();
-			logger.log(opt + ' Devices Reset);
+			logger.log(opt + ' Devices Reset');
 		});
 	});
 }
