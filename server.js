@@ -27,6 +27,11 @@ var subscriber = mqtt.connect(mqtt_url , {
 	password: process.env.CLOUDMQTT_SUB_PWD || ''
 });
 
+var reseter = mqtt.connect(mqtt_url , {
+	username: process.env.CLOUDMQTT_SUB_UID || '',
+	password: process.env.CLOUDMQTT_SUB_PWD || ''
+});
+
 var bridge = {
 	status		: true, 
 	bridgeid	: process.env.CLOUD_BRIDGE_ID || 'ABCD_ID', 
@@ -62,6 +67,14 @@ var loadDeviceInfo = function( criteria, callBackMethods){
 	});
 }
 
+var resetAllDevices =  function(){
+	MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
+		db.collection('DEVICE_STORE').update( {}, {$set: {state: false}}, function(err, opt) {
+			db.close();
+		});
+	});
+}
+
 var updateDeviceInfo = function( _device ){
 	loadDeviceInfo({deviceId: _device.deviceId}, { 
 		success: function(device){
@@ -90,6 +103,15 @@ var updateDeviceInfo = function( _device ){
 		}
 	});
 }
+
+reseter.on('connect', function() { 
+	reseter.subscribe('T_APESCONSOLE_RD');
+	reseter.on('message', function(topic, message, packet) {
+		logger.log("Raspberry Pi Restart Detected ->'" + message.toString());
+		//Asynch Reset Update to all Device Shut Down. I don't care of the call back
+		resetAllDevices();
+	});
+});
 
 subscriber.on('connect', function() { 
     // When connected
