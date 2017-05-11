@@ -105,7 +105,7 @@ var updateDeviceInfo = function( _device ){
 }
 
 reseter.on('connect', function() { 
-	reseter.subscribe('T_APESCONSOLE_RD');
+	reseter.subscribe('T_APESCONSOLE_RESET');
 	reseter.on('message', function(topic, message, packet) {
 		logger.log("Raspberry Pi Restart Detected ->'" + message.toString());
 		//Asynch Reset Update to all Device Shut Down. I don't care of the call back
