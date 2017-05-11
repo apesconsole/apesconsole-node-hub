@@ -70,8 +70,9 @@ var loadDeviceInfo = function( criteria, callBackMethods){
 var resetAllDevices =  function(){
 	MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
 	    //Update all Devices
-		db.collection('DEVICE_STORE').update( {}, {$set: {state: false}}, {w: 1, multi: true}, function(err, opt) {
+		db.collection('DEVICE_STORE').update({$set: {state: false}}, {w: 1, multi: true}, function(err, opt) {
 			db.close();
+			logger.log(opt + ' Devices Reset);
 		});
 	});
 }
