@@ -67,16 +67,6 @@ var loadDeviceInfo = function( criteria, callBackMethods){
 	});
 }
 
-var resetAllDevices =  function(){
-	MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
-	    //Update all Devices
-		db.collection('DEVICE_STORE').update({status: true, active: 'active'}, {$set: {status: false}}, {w: 1, multi: true}, function(err, opt) {
-			db.close();
-			logger.log('Mongo Update - ALL');
-		});
-	});
-}
-
 var updateDeviceInfo = function( _device ){
     logger.log(_device.deviceId);
 	loadDeviceInfo({deviceId: _device.deviceId}, { 
@@ -107,6 +97,19 @@ var updateDeviceInfo = function( _device ){
 			logger.log('Device Update Failed - Device Id:' + _device.deviceId);
 		}
 	});
+}
+
+var resetAllDevices =  function(){
+	loadDeviceInfo({}, {
+		success: function(rows){
+		   for(var i = 0; i< rows.length; i++){
+		       //Asynch Call in a Loop - I don't care about the response
+		       updateDeviceInfo(rows[i]);
+		   }
+		}, failure: function(){
+		   logger.log('Device Reset Failed');
+		}
+	})
 }
 
 reseter.on('connect', function() { 
