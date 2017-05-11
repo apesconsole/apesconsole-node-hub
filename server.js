@@ -72,7 +72,7 @@ var resetAllDevices =  function(){
 	    //Update all Devices
 		db.collection('DEVICE_STORE').update({status: true, active: 'active'}, {$set: {status: false}}, {w: 1, multi: true}, function(err, opt) {
 			db.close();
-			logger.log(opt);
+			logger.log('Mongo Update - ALL');
 		});
 	});
 }
