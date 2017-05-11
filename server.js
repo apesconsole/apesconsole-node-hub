@@ -184,17 +184,20 @@ var devicelist = function(_roomId, callBak){
 }
 
 var click = function(req,res){
-	var data = {status: true};
+	var data = {status: false};
 	var url_parts = url.parse(req.url, true);
 	var query = url_parts.query;	
 	// publish a message to a topic
 	if('undefined' == query.requestState || undefined == query.requestState) return {status: false};
+	var message = '{"status": "' + query.requestState + '",  "deviceId": "' + query.deviceId + '", "roomId":' + query.roomId + '}'
+	logger.log('Pub Message->' + JSON.stringify(message));
 	publisher.publish(
 	    //Topic
 		'T_APESCONSOLE_TRG', 
 		//Message
-		'{"status": "' + query.requestState + '",  "deviceId": "' + query.deviceId + '", "roomId":' + query.roomId + '}'
+		message
 	);		
+	data.state = true;
 	return data;
 }
 
