@@ -74,7 +74,7 @@ var updateDeviceInfo = function( _device ){
 			logger.log(device.length);
 			if(device.length == 1) {
 				var data = {
-					status: _device.status == 1 ? true : (_device.status == 0 ) ? false : ( _device.status ) 
+					status: ( _device.status ) 
 				};
 				
 				if(device.type == 'S'){
@@ -84,7 +84,7 @@ var updateDeviceInfo = function( _device ){
 				}
 				
 				MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
-					db.collection('DEVICE_STORE').update( {deviceId: _device.deviceId}, {$set: data}, function(err, opt) {
+					db.collection('DEVICE_STORE').update( { _id: device._id}, {$set: data}, function(err, opt) {
 						db.close();
 						logger.log(opt);
 					});
