@@ -67,14 +67,24 @@ var loadDeviceInfo = function( criteria, callBackMethods){
 	});
 }
 
+var resetAllDevices =  function(){
+	MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
+	    //Update all Devices
+		db.collection('DEVICE_STORE').update({status: true, active: 'active'}, {$set: {status: false}}, {multi: true}, function(err, opt) {
+			db.close();
+			logger.log('Mongo Uplpoad');
+		});
+	});
+}
+
 var updateDeviceInfo = function( _device ){
-    logger.log(_device.deviceId);
+    logger.log('Device Update Attemted for - ' + _device.deviceId);
 	loadDeviceInfo({deviceId: _device.deviceId}, { 
 		success: function(device){
-			logger.log(device.length);
+			logger.log('Device Detection - ' + device.length);
 			if(device.length == 1) {
 				var data = {
-					status: ( _device.status ) 
+					status: _device.status == 1 ? true : (_device.status == 0 ) ? false : ( _device.status ) 
 				};
 				
 				if(device.type == 'S'){
@@ -84,7 +94,7 @@ var updateDeviceInfo = function( _device ){
 				}
 				
 				MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
-					db.collection('DEVICE_STORE').update( { _id: device._id}, {$set: data}, function(err, opt) {
+					db.collection('DEVICE_STORE').update( {deviceId: _device.deviceId}, {$set: data}, function(err, opt) {
 						db.close();
 						logger.log(opt);
 					});
@@ -97,19 +107,6 @@ var updateDeviceInfo = function( _device ){
 			logger.log('Device Update Failed - Device Id:' + _device.deviceId);
 		}
 	});
-}
-
-var resetAllDevices =  function(){
-	loadDeviceInfo({}, {
-		success: function(rows){
-		   for(var i = 0; i< rows.length; i++){
-		       //Asynch Call in a Loop - I don't care about the response
-		       updateDeviceInfo(rows[i]);
-		   }
-		}, failure: function(){
-		   logger.log('Device Reset Failed');
-		}
-	})
 }
 
 reseter.on('connect', function() { 
