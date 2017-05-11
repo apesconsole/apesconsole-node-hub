@@ -70,7 +70,7 @@ var loadDeviceInfo = function( criteria, callBackMethods){
 var resetAllDevices =  function(){
 	MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
 	    //Update all Devices
-		db.collection('DEVICE_STORE').update( {}, {$set: {state: false}}, {multi:true}, function(err, opt) {
+		db.collection('DEVICE_STORE').update( {}, {$set: {state: false}}, {w: 1, multi: true}, function(err, opt) {
 			db.close();
 		});
 	});
@@ -79,7 +79,7 @@ var resetAllDevices =  function(){
 var updateDeviceInfo = function( _device ){
 	loadDeviceInfo({deviceId: _device.deviceId}, { 
 		success: function(device){
-			if(device.length > 0) {
+			if(device.length == 0) {
 				var data = {
 					status: _device.status
 				};
