@@ -86,7 +86,7 @@ var updateDeviceInfo = function( _device ){
 				var data = {
 					status: _device.status == 1 ? true : (_device.status == 0 ) ? false : ( _device.status ) 
 				};
-				logger.log(data.type);
+				logger.log(device.type);
 				if(device.type == "S"){
 					//Sensor Data
 					logger.log(data.value);
