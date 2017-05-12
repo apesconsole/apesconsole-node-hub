@@ -70,7 +70,7 @@ var loadDeviceInfo = function( criteria, callBackMethods){
 var resetAllDevices =  function(){
 	MongoClient.connect(cloudMonGoDBConfig.mongoUri, function(err, db) {
 	    //Update all Devices
-		db.collection('DEVICE_STORE').update({status: true, active: 'active'}, {$set: {status: false}}, {multi: true}, function(err, opt) {
+		db.collection('DEVICE_STORE').update({status: true, active: "active"}, {$set: {status: false}}, {multi: true}, function(err, opt) {
 			db.close();
 			logger.log('Mongo Update');
 		});
@@ -87,7 +87,7 @@ var updateDeviceInfo = function( _device ){
 					status: _device.status == 1 ? true : (_device.status == 0 ) ? false : ( _device.status ) 
 				};
 				logger.log(data.status);
-				if(device.type == 'S'){
+				if(device.type == "S"){
 					//Sensor Data
 					data.color = _device.status ? 'green' : 'red';
 					data.value  = _device.value;
