@@ -76,6 +76,7 @@
 			$scope.loadDevice = function(roomId){
 				$http.get("/appaccess?action=devicelist&roomId=" + roomId)
 				.then(function(response) {
+					$scope.roomId = roomId;
 					$scope.devicelist = response.data;
 				});	
 			}
