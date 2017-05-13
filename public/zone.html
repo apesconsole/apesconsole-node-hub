@@ -81,6 +81,7 @@
 				});	
 			}
 			$scope.triggerDevice = function(roomId, device, state){
+				if('undefined' == state) return false;
 				$http.get('/appaccess?action=click&deviceId=' + device.deviceId + '&roomId=' + roomId + '&requestState=' + state)
 				.then(function(response) {
 					return;
