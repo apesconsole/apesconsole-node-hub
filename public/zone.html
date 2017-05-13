@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="Ape's Console">
+    <meta name="author" content="">
+    <link rel="icon" href="/resources/bootstrap/favicon.ico">
+
+    <title>Ape's Console</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/resources/bootstrap/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+
+    <!-- MetisMenu CSS -->
+    <link href="/resources/bootstrap/vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="/resources/bootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+	<link href="/resources/templates/css/style.css" rel="stylesheet">
+    <!-- Custom Fonts -->
+    <link href="/resources/bootstrap/vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+
+  <body>
+
+    <div id="wrapper" ng-app="zoneApp" ng-controller="zoneCtrl">
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+			<div class="navbar-header">
+                <a class="navbar-brand" href="home">User : {{name}}</a>
+            </div>				
+			<leftmenu></leftmenu>
+		</nav>
+		<div id="page-wrapper">
+			<bodypage></bodypage>
+		</div>
+	</div>
+	<!-- Angular -->
+	<script src="/resources/angular/angular.min.js"></script>
+    <!-- jQuery -->
+    <script src="/resources/bootstrap/vendor/jquery/jquery.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="/resources/bootstrap/vendor/bootstrap/js/bootstrap.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="/resources/bootstrap/vendor/metisMenu/metisMenu.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="/resources/bootstrap/dist/js/sb-admin-2.js"></script>
+  </body>
+</html>
+<script>
+	var zone = angular.module('zoneApp', []);	
+
+	zone.directive('bodypage', function($compile) {
+		var directive = {};
+		directive.restrict = 'E';
+		directive.templateUrl = "/resources/templates/device-list.html";		
+		directive.controller = function($scope, $rootScope, $http) {
+			$http.get("/appaccess?action=roomlist")
+			.then(function(response) {
+				$scope.message = 'Available Zones';
+				$scope.roomlist = response.data;
+			});	
+			$scope.loadDevice = function(roomId){
+				$http.get("/appaccess?action=devicelist&roomId=" + roomId)
+				.then(function(response) {
+					$scope.devicelist = response.data;
+				});	
+			}
+		};
+		return directive;
+	});
+	zone.directive('leftmenu', function($compile) {
+		var directive = {};
+		directive.restrict = 'E';
+		directive.templateUrl = "/resources/templates/left-menu.html";		
+		directive.controller = function($scope, $rootScope, $http) {
+			//$scope.guesttab = 'active';			
+		};		
+		return directive;
+	});	
+	zone.controller('zoneCtrl', function($scope, $http) {
+		$http.get("/getuser")
+		.then(function(response) {
+			$scope.name = response.data.name;
+		});
+	});
+</script>

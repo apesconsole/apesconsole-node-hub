@@ -9,27 +9,55 @@ var router = express.Router();
 var logger = require("logging_component");
 var url = require("url");
 var mqtt = require('mqtt');
+
+/*
+	Cloud MongoDB Based Security & Operations
+*/
+var bodyParser   = require('body-parser');
+var cookieParser = require('cookie-parser');
+var session      = require('express-session');
+var MongoStore   = require('connect-mongo')(session);
 var MongoClient  = require('mongodb').MongoClient;
+app.use(bodyParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
+//MongoDB Connection Details
+var cloudMonGoDBConfig = {
+    mongoUri: process.env.MONGODB_URI || 'mongodb://apesconsoledata:apesconsoledata@ds137801.mlab.com:37801/heroku_iot_data',
+	mongoUsr: process.env.MONGODB_USR || 'mongodb://apesconsoleuser:apesconsoleuser@ds139761.mlab.com:39761/heroku_iot_user',
+	mongoSession: process.env.MONGODB_SESSION_URL || 'mongodb://apesconsole:apesconsole@ds137801.mlab.com:37801/heroku_session' 
+}
+var mongoose = require('mongoose');
+mongoose.connect(cloudMonGoDBConfig.mongoSession);
+var sessionStore = new MongoStore({mongooseConnection: mongoose.connection });
+	
+app.use(session({
+    cookie: { maxAge: 1000*60*30 } ,
+	//This is the Secret Key
+    secret: "apesconsole session secret code",
+    store: sessionStore
+}));
 
 var path = __dirname + '/public/';
 app.use('/resources', express.static(path + 'resources'));
 app.use("/", router);
 
-var mqtt_url = url.parse(process.env.CLOUDMQTT_URL || 'tcp://localhost:0000');
+var mqtt_url = url.parse(process.env.CLOUDMQTT_URL || 'tcp://m13.cloudmqtt.com:16786');
 // Create a client connection
 var publisher = mqtt.connect(mqtt_url , {
-	username: process.env.CLOUDMQTT_PUB_UID || '',
-	password: process.env.CLOUDMQTT_PUB_PWD || ''
+	username: process.env.CLOUDMQTT_PUB_UID || 'APES_CONSOLE_HUB',
+	password: process.env.CLOUDMQTT_PUB_PWD || '1234567890'
 });
 
 var subscriber = mqtt.connect(mqtt_url , {
-	username: process.env.CLOUDMQTT_SUB_UID || '',
-	password: process.env.CLOUDMQTT_SUB_PWD || ''
+	username: process.env.CLOUDMQTT_SUB_UID || 'APES_CONSOLE_HUB',
+	password: process.env.CLOUDMQTT_SUB_PWD || '1234567890'
 });
 
 var reseter = mqtt.connect(mqtt_url , {
-	username: process.env.CLOUDMQTT_SUB_UID || '',
-	password: process.env.CLOUDMQTT_SUB_PWD || ''
+	username: process.env.CLOUDMQTT_SUB_UID || 'APES_CONSOLE_HUB',
+	password: process.env.CLOUDMQTT_SUB_PWD || '1234567890'
 });
 
 var bridge = {
@@ -39,8 +67,16 @@ var bridge = {
 	key			: process.env.CLOUD_BRIDGE_KEY || 'ABCD_KEY'
 };
 
-var cloudMonGoDBConfig = {
-    mongoUri: process.env.MONGODB_URI || ''
+var userValidatoin = function(user, callBackMethods){
+	MongoClient.connect(cloudMonGoDBConfig.mongoUsr, function(err, db) {
+		db.collection('USERS').findOne( user, function(err, result) {
+			db.close();
+			if (err || null == result || null == result.userId) 
+				callBackMethods.failure();
+			else
+				callBackMethods.success(result)
+		});
+	});
 }
 
 var loadZoneInfo = function(callBackMethods){
@@ -229,20 +265,77 @@ var click = function(req,res){
 	return data;
 }
 
-router.get("/shut", function(req,res){
-	logger.log("Shutting Down");
-	publisher.end();
-	subscriber.end();	
-	res.redirect('/index');
+app.get("/getuser", function(req,res){
+	logger.log('req.session.userId = '+ req.session.userId);
+	if(req.session.userId != undefined)
+		res.json({'name': req.session.name});
+	else res.json({});
 });
 
-router.get("/", function(req,res){
-	res.redirect('/index');
+/*
+	Get Method not Allowed for authentication
+*/
+app.get("/auth", function(req, res){
+	res.redirect('/login');
 });
 
-router.get("/index", function(req,res){
-	res.sendFile(path + "index.html");
+app.post("/auth", function(req, res){
+	if(null != req.body.userId && null != req.body.password && '' != req.body.userId && '' != req.body.password){
+	    userValidatoin( {
+		        //User Entered Information
+				userId: req.body.userId, 
+				password:req.body.password
+			}, { 
+				//If Valid User Call 
+				success: function(userInfo){
+					req.session.userId = userInfo.userId;
+					req.session.name = userInfo.name;
+					res.redirect('/home');
+				}, 
+				//If In-Valid User Call 
+				failure: function(){
+					res.redirect('/login');
+				}
+			}
+		);
+	} else {
+		res.redirect('/login');
+	}
 });	
+
+
+//All URL Patterns Routing
+
+app.get("/", function(req,res){
+	if(null != req.session.name){
+		res.redirect('/home');
+	} else {
+		res.redirect('/login');
+	}
+});
+
+app.get("/login", function(req,res){
+	if(null != req.session || undefined != req.session)
+		req.session.destroy();
+	res.sendFile(path + "login.html");
+});	
+
+app.get("/home", function(req,res){
+	if(req.session.name == undefined)
+		res.redirect('/login');
+	else res.sendFile(path + "home.html");
+});
+
+app.get("/zone", function(req,res){
+	if(req.session.name == undefined)
+		res.redirect('/login');
+	else res.sendFile(path + "zone.html");
+});
+
+app.get("/logout", function(req,res){
+	res.redirect('/login');
+});
+
 
 http.listen(process.env.PORT || 3001, () => {				
 	logger.log('##################################################');
