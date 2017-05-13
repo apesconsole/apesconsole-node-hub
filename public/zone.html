@@ -79,6 +79,12 @@
 					$scope.devicelist = response.data;
 				});	
 			}
+			$scope.triggerDevice = function(roomId, device, state){
+				$http.get('/appaccess?action=click&deviceId=' + device.deviceId + '&roomId=' + roomId + '&requestState=' + state)
+				.then(function(response) {
+					return;
+				});	
+			}
 		};
 		return directive;
 	});
