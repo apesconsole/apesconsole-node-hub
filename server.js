@@ -24,9 +24,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 //MongoDB Connection Details
 var cloudMonGoDBConfig = {
-    mongoUri: process.env.MONGODB_URI || 'mongodb://apesconsoledata:apesconsoledata@ds137801.mlab.com:37801/heroku_iot_data',
-	mongoUsr: process.env.MONGODB_USR || 'mongodb://apesconsoleuser:apesconsoleuser@ds139761.mlab.com:39761/heroku_iot_user',
-	mongoSession: process.env.MONGODB_SESSION_URL || 'mongodb://apesconsole:apesconsole@ds137801.mlab.com:37801/heroku_session' 
+    mongoUri: process.env.MONGODB_URI || '',
+	mongoUsr: process.env.MONGODB_USR || '',
+	mongoSession: process.env.MONGODB_SESSION_URL || '' 
 }
 var mongoose = require('mongoose');
 mongoose.connect(cloudMonGoDBConfig.mongoSession);
@@ -43,28 +43,28 @@ var path = __dirname + '/public/';
 app.use('/resources', express.static(path + 'resources'));
 app.use("/", router);
 
-var mqtt_url = url.parse(process.env.CLOUDMQTT_URL || 'tcp://m13.cloudmqtt.com:16786');
+var mqtt_url = url.parse(process.env.CLOUDMQTT_URL || '');
 // Create a client connection
 var publisher = mqtt.connect(mqtt_url , {
-	username: process.env.CLOUDMQTT_PUB_UID || 'APES_CONSOLE_HUB',
-	password: process.env.CLOUDMQTT_PUB_PWD || '1234567890'
+	username: process.env.CLOUDMQTT_PUB_UID || '',
+	password: process.env.CLOUDMQTT_PUB_PWD || ''
 });
 
 var subscriber = mqtt.connect(mqtt_url , {
-	username: process.env.CLOUDMQTT_SUB_UID || 'APES_CONSOLE_HUB',
-	password: process.env.CLOUDMQTT_SUB_PWD || '1234567890'
+	username: process.env.CLOUDMQTT_SUB_UID || '',
+	password: process.env.CLOUDMQTT_SUB_PWD || ''
 });
 
 var reseter = mqtt.connect(mqtt_url , {
-	username: process.env.CLOUDMQTT_SUB_UID || 'APES_CONSOLE_HUB',
-	password: process.env.CLOUDMQTT_SUB_PWD || '1234567890'
+	username: process.env.CLOUDMQTT_SUB_UID || '',
+	password: process.env.CLOUDMQTT_SUB_PWD || ''
 });
 
 var bridge = {
 	status		: true, 
-	bridgeid	: process.env.CLOUD_BRIDGE_ID || 'ABCD_ID', 
-	bridgename	: process.env.CLOUD_BRIDGE_NAME || 'ABCD_NAME', 
-	key			: process.env.CLOUD_BRIDGE_KEY || 'ABCD_KEY'
+	bridgeid	: process.env.CLOUD_BRIDGE_ID || '', 
+	bridgename	: process.env.CLOUD_BRIDGE_NAME || '', 
+	key			: process.env.CLOUD_BRIDGE_KEY || ''
 };
 
 var userValidatoin = function(user, callBackMethods){
