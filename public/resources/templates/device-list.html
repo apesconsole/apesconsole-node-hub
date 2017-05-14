@@ -35,7 +35,7 @@
 					<button class="btn btn-sm btn-success" type="button" ng-click="triggerDevice(device, $event)" ng-if="device.status">
 						ON
 					</button>
-					<button class="btn btn-sm btn-dander" type="button" ng-click="triggerDevice(device, $event)">
+					<button class="btn btn-sm btn-danger" type="button" ng-click="triggerDevice(device, $event)" ng-if="!device.status">
 						OFF
 					</button>
 				 </label>				 
