@@ -24,9 +24,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
 //MongoDB Connection Details
 var cloudMonGoDBConfig = {
-    mongoUri: process.env.MONGODB_URI || '',
-	mongoUsr: process.env.MONGODB_USR || '',
-	mongoSession: process.env.MONGODB_SESSION_URL || '' 
+    mongoUri: process.env.MONGODB_URI || 'mongodb://apesconsoledata:apesconsoledata@ds137801.mlab.com:37801/heroku_iot_data',
+	mongoUsr: process.env.MONGODB_USR || 'mongodb://apesconsoleuser:apesconsoleuser@ds139761.mlab.com:39761/heroku_iot_user',
+	mongoSession: process.env.MONGODB_SESSION_URL || 'mongodb://apesconsole:apesconsole@ds137801.mlab.com:37801/heroku_session' 
 }
 var mongoose = require('mongoose');
 mongoose.connect(cloudMonGoDBConfig.mongoSession);
@@ -43,21 +43,21 @@ var path = __dirname + '/public/';
 app.use('/resources', express.static(path + 'resources'));
 app.use("/", router);
 
-var mqtt_url = url.parse(process.env.CLOUDMQTT_URL || '');
+var mqtt_url = url.parse(process.env.CLOUDMQTT_URL || 'tcp://m13.cloudmqtt.com:16786');
 // Create a client connection
 var publisher = mqtt.connect(mqtt_url , {
-	username: process.env.CLOUDMQTT_PUB_UID || '',
-	password: process.env.CLOUDMQTT_PUB_PWD || ''
+	username: process.env.CLOUDMQTT_PUB_UID || 'APES_CONSOLE_HUB',
+	password: process.env.CLOUDMQTT_PUB_PWD || '1234567890'
 });
 
 var subscriber = mqtt.connect(mqtt_url , {
-	username: process.env.CLOUDMQTT_SUB_UID || '',
-	password: process.env.CLOUDMQTT_SUB_PWD || ''
+	username: process.env.CLOUDMQTT_SUB_UID || 'APES_CONSOLE_HUB',
+	password: process.env.CLOUDMQTT_SUB_PWD || '1234567890'
 });
 
 var reseter = mqtt.connect(mqtt_url , {
-	username: process.env.CLOUDMQTT_SUB_UID || '',
-	password: process.env.CLOUDMQTT_SUB_PWD || ''
+	username: process.env.CLOUDMQTT_SUB_UID || 'APES_CONSOLE_HUB',
+	password: process.env.CLOUDMQTT_SUB_PWD || '1234567890'
 });
 
 var bridge = {

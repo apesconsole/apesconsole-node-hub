@@ -16,6 +16,11 @@
  color:#fff !important;
 }
 
+.top-bg-dark {
+	background: #a64244 !important;
+
+}
+
 .text{
   margin: 5px;
   display: inline-block;

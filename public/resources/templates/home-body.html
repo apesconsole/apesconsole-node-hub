@@ -8,14 +8,23 @@
 			This Application is a POC to demonstrate IoT driven by Cloud. It consists of 3 components
 			<ol>
 				<li>
-					<h5>HUB</h5>
-					
+					<h5><strong>HUB</strong></h5>
+					<p>
+					   HUB is a Nodejs application running on Heroku Platform. Hub is also a CloudMQTT PUB/SUB client. This is also the Master application.
+					   Hub has a REST API to expose the triggering operations and Validation of Mobile Apps. It also hosts a Web application to interact with the Devices. All the data is stored in mLAB MongoDB cloud server.
+					</p>
 				</li>
 				<li>
-					<h5>Raspberry Pi 3</h5>
+					<h5><strong>Raspberry Pi 3</strong></h5>
+					<p>
+					   Raspberry Pi 3 is the ARM running a Nodejs CloudMQTT PUB/SUB subscriber application on Ubuntu. It is responsible for triggering the GPIO operations and sending a Feed Back to the HUB.
+					</p>
 				</li>
 				<li>
-					<h5>Ionic Mobile App</h5>
+					<h5><strong>Ionic Mobile App</strong></h5>
+					<p>
+					   Ionic provides the Mobile development and collaboration platform. It interacts with the HUB to interact with Devices.
+					</p>
 				</li>				
 			</ol>
 		</p>
