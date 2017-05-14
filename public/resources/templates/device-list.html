@@ -14,7 +14,7 @@
 		</ul>
 	</div>	
 </div>
-<div class="row" {{roomId}}>
+<div class="row">
 	  <table class="table">
 		<thead>
 		  <tr>
@@ -32,10 +32,12 @@
 			</td>
 			<td>
 				<label class="toggle" ng-if='device.type == "N"'>
-					<input type="button" ng-click="triggerDevice(roomId, device, state, $event)" ng-model='state' value="{{device.status}}"/>
-				 </label>
-				<label class="toggle" ng-if='device.type == "N" && !device.active'>
-					<input type="button" ng-click="triggerDevice(roomId, device, state, $event)" ng-model='state' ng-checked="{{device.status}}" disabled="true"/>
+					<button class="btn btn-sm btn-success" type="button" ng-click="triggerDevice(device, $event)" ng-if="device.status">
+						ON
+					</button>
+					<button class="btn btn-sm btn-dander" type="button" ng-click="triggerDevice(device, $event)">
+						OFF
+					</button>
 				 </label>				 
 			</td>
 		  </tr>		  

@@ -74,18 +74,21 @@
 				$scope.message = 'Available Zones';
 				$scope.roomlist = response.data;
 			});	
-			$scope.loadDevice = function(roomId){
+			var loadRoom = function(roomId){
 				$http.get("/appaccess?action=devicelist&roomId=" + roomId)
 				.then(function(response) {
 					$scope.roomId = roomId;
 					$scope.devicelist = response.data;
 					deviceList = response.data;
-				});	
+				});			
 			}
-			$scope.triggerDevice = function(roomId, device, state){
-				$http.get('/appaccess?action=click&deviceId=' + device.deviceId + '&roomId=' + roomId + '&requestState=' + state)
+			$scope.loadDevice = function(roomId){
+					loadRoom(roomId);
+			}
+			$scope.triggerDevice = function(device){
+				$http.get('/appaccess?action=click&deviceId=' + device.deviceId + '&roomId=' + device.roomId + '&requestState=' + (!device.state))
 				.then(function(response) {
-					return;
+					loadRoom(device.roomId);	
 				});	
 			}
 		};
