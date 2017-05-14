@@ -32,10 +32,10 @@
 			</td>
 			<td>
 				<label class="toggle" ng-if='device.type == "N"'>
-					<input type="checkbox" ng-click="triggerDevice(roomId, device, state, $event)" ng-model='state' ng-checked="{{device.status}}"/>
+					<input type="button" ng-click="triggerDevice(roomId, device, state, $event)" ng-model='state' value="{{device.status}}"/>
 				 </label>
 				<label class="toggle" ng-if='device.type == "N" && !device.active'>
-					<input type="checkbox" ng-click="triggerDevice(roomId, device, state, $event)" ng-model='state' ng-checked="{{device.status}}" disabled="true"/>
+					<input type="button" ng-click="triggerDevice(roomId, device, state, $event)" ng-model='state' ng-checked="{{device.status}}" disabled="true"/>
 				 </label>				 
 			</td>
 		  </tr>		  

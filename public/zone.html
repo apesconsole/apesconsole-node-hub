@@ -68,6 +68,7 @@
 		directive.restrict = 'E';
 		directive.templateUrl = "/resources/templates/device-list.html";		
 		directive.controller = function($scope, $rootScope, $http) {
+			var deviceList = [];
 			$http.get("/appaccess?action=roomlist")
 			.then(function(response) {
 				$scope.message = 'Available Zones';
@@ -78,10 +79,10 @@
 				.then(function(response) {
 					$scope.roomId = roomId;
 					$scope.devicelist = response.data;
+					deviceList = response.data;
 				});	
 			}
 			$scope.triggerDevice = function(roomId, device, state){
-				if('undefined' == state) return false;
 				$http.get('/appaccess?action=click&deviceId=' + device.deviceId + '&roomId=' + roomId + '&requestState=' + state)
 				.then(function(response) {
 					return;
