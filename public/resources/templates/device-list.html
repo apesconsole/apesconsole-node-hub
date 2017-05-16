@@ -1,7 +1,7 @@
 
 <div class="row">
 	<div class="col-lg-12">
-		<h1 class="page-header">{{message}}</h1>
+		<h1 class="page-header fonty">{{message}}</h1>
 	</div>
 	
 </div>
@@ -15,7 +15,7 @@
 	</div>	
 </div>
 <div class="row">
-	  <table class="table">
+	  <table class="table fonty">
 		<thead>
 		  <tr>
 			<th>Device</th>
@@ -28,15 +28,18 @@
 				<span class="">{{device.title}}</span>
 			</td>
 			<td ng-if='device.type == "S"'>
-				{{device.message}} : <span class="{{device.color}}-color">{{device.value}}{{device.unit}} </span>
+				<span class="">{{device.message}}</span>
 			</td>
 			<td>
+				<label class="toggle" ng-if='device.type == "S"'>
+					<span class="{{device.color}}-color">{{device.value}}{{device.unit}} </span>
+				 </label>			
 				<label class="toggle" ng-if='device.type == "N"'>
 					<button class="btn btn-sm btn-success" type="button" ng-click="triggerDevice(device, $event)" ng-if="device.status">
-						On
+						Turn On
 					</button>
 					<button class="btn btn-sm btn-d" type="button" ng-click="triggerDevice(device, $event)" ng-if="!device.status">
-						Off
+						Turn Off
 					</button>
 				 </label>				 
 			</td>

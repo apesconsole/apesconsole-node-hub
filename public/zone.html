@@ -29,15 +29,25 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+	<style>
+		.fonty {
+			color: #687888;
+		}
+		.icon {
+			width: 40px;
+			height: 40px;
+			color: green;
+		}		
+	</style>	
   </head>
 
   <body>
 
     <div id="wrapper" ng-app="zoneApp" ng-controller="zoneCtrl">
         <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0;  background-color: #687888;">
 			<div class="navbar-header">
-                <a class="navbar-brand" href="home">User : {{name}}</a>
+                <a class="navbar-brand" style='color: white; font-size: 12px;' href="home"><strong>User</strong> : {{name}}</a>
             </div>				
 			<leftmenu></leftmenu>
 		</nav>
